@@ -1,7 +1,12 @@
 {
     "name": "Presentation",
     "rootNamespace": "Presentation",
-    "references": [],
+    "references": [
+        "Domain",
+        "VContainer",
+        "Unity.InputSystem",
+        "ContractsInterfaces"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

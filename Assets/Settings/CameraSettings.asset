@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66f1862925ff41a49a91086748e21102, type: 3}
+  m_Script: {fileID: 11500000, guid: dd4e8c8b5999aa043a4d4f3343ddf7d5, type: 3}
   m_Name: CameraSettings
-  m_EditorClassIdentifier: Infrastructure::Infrastructure.CameraSettings
-  _moveSpeed: 10
+  m_EditorClassIdentifier: RepositoriesGameplay::Repositories.Gameplay.CameraSettings
+  _moveSpeed: 20
   _zoomSpeed: 2
   _minZoom: 5
   _maxZoom: 30

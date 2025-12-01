@@ -11,11 +11,13 @@ namespace Installers.Gameplay
         [Tooltip("Список MonoBehaviour компонентов, реализующих IInstaller. Добавьте CameraInstaller и другие Installers.")]
         [SerializeField] private CameraInstaller _cameraInstaller;
         [SerializeField] private InputInstaller _inputInstaller;
+        [SerializeField] private GridInstaller _gridInstaller;
 
         protected override void Configure(IContainerBuilder builder)
         {
             _cameraInstaller.Install(builder);
             _inputInstaller.Install(builder);
+            _gridInstaller.Install(builder);
             
             builder.RegisterEntryPoint<GameFlow>();
         }

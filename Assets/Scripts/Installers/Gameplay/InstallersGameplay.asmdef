@@ -4,6 +4,8 @@
     "references": [
         "Infrastructure",
         "RepositoriesGameplay",
+        "Domain",
+        "Presentation",
         "ContractsInterfaces",
         "VContainer",
         "Unity.InputSystem"

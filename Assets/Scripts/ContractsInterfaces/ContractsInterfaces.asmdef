@@ -1,7 +1,10 @@
 {
     "name": "ContractsInterfaces",
     "rootNamespace": "ContractsInterfaces",
-    "references": [],
+    "references": [
+        "Domain",
+        "UnityEngine"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

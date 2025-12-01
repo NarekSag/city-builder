@@ -1,14 +1,9 @@
 {
-    "name": "Infrastructure",
-    "rootNamespace": "Infrastructure",
+    "name": "UseCasesGameplay",
+    "rootNamespace": "UseCases.Gameplay",
     "references": [
         "Domain",
         "ContractsInterfaces",
-        "Application",
-        "RepositoriesGameplay",
-        "Presentation",
-        "Unity.InputSystem",
-        "UnityEngine",
         "VContainer"
     ],
     "includePlatforms": [],
@@ -21,3 +16,4 @@
     "versionDefines": [],
     "noEngineReferences": false
 }
+
