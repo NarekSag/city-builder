@@ -1,11 +1,7 @@
 {
     "name": "Presentation",
     "rootNamespace": "Presentation",
-    "references": [
-        "3d38ae08dc720d748a0e9a6373ddf9ff",
-        "7065019756fa3b34b9e8038dc8f6741e",
-        "d92de8f3c760b7c48a37a6bc583e3a15"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -16,4 +12,3 @@
     "versionDefines": [],
     "noEngineReferences": false
 }
-
