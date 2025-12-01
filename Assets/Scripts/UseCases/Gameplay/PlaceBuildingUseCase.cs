@@ -15,6 +15,7 @@ namespace UseCases.Gameplay
     {
         [Inject] private Grid _grid;
         [Inject] private IEconomyService _economyService;
+        [Inject] private IBuildingConfigService _buildingConfig;
         [Inject] private IPublisher<BuildingPlacedDTO> _buildingPlacedPublisher;
         [Inject] private IPublisher<InsufficientGoldDTO> _insufficientGoldPublisher;
         [Inject] private ISubscriber<PlaceBuildingRequestDTO> _placeBuildingRequestSubscriber;
@@ -46,7 +47,7 @@ namespace UseCases.Gameplay
                 return;
             }
 
-            var cost = BuildingCostCalculator.GetCost(request.BuildingType, 1);
+            var cost = _buildingConfig.GetCost(request.BuildingType, 1);
             var currentGold = _economyService.GetGold();
 
             if (!_economyService.HasEnoughGold(cost))
@@ -66,7 +67,8 @@ namespace UseCases.Gameplay
                 return;
             }
 
-            var building = new Building(_nextBuildingId++, request.BuildingType, 1, request.Position);
+            var income = _buildingConfig.CalculateIncome(request.BuildingType, 1);
+            var building = new Building(_nextBuildingId++, request.BuildingType, 1, request.Position, income);
 
             if (!_grid.PlaceBuilding(building, request.Position))
             {

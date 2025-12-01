@@ -15,6 +15,7 @@ namespace UseCases.Gameplay
     {
         [Inject] private Grid _grid;
         [Inject] private IEconomyService _economyService;
+        [Inject] private IBuildingConfigService _buildingConfig;
         [Inject] private IPublisher<BuildingUpgradedDTO> _buildingUpgradedPublisher;
         [Inject] private IPublisher<InsufficientGoldDTO> _insufficientGoldPublisher;
         [Inject] private ISubscriber<UpgradeBuildingRequestDTO> _upgradeBuildingRequestSubscriber;
@@ -64,7 +65,7 @@ namespace UseCases.Gameplay
                 return;
             }
 
-            var upgradeCost = BuildingUpgradeRules.GetUpgradeCost(building.Type, building.Level);
+            var upgradeCost = _buildingConfig.GetUpgradeCost(building.Type, building.Level);
             var currentGold = _economyService.GetGold();
 
             if (!_economyService.HasEnoughGold(upgradeCost))
@@ -84,7 +85,8 @@ namespace UseCases.Gameplay
                 return;
             }
 
-            if (!building.Upgrade())
+            var newIncome = _buildingConfig.CalculateIncome(building.Type, building.Level + 1);
+            if (!building.Upgrade(newIncome))
             {
                 Debug.LogWarning($"[UpgradeBuildingUseCase] Failed to upgrade building {request.BuildingId} - refunding {upgradeCost} gold");
                 _economyService.AddGold(upgradeCost);

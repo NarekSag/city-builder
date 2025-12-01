@@ -9,6 +9,23 @@ namespace Tests.Domain
     [TestFixture]
     public class GridTests
     {
+        private Income CreateDefaultIncome(BuildingType type, int level)
+        {
+            var baseIncome = type switch
+            {
+                BuildingType.House => 1,
+                BuildingType.Farm => 3,
+                BuildingType.Mine => 5,
+                _ => 1
+            };
+            return new Income(baseIncome * level, type);
+        }
+
+        private Building CreateBuilding(int id, BuildingType type, int level, GridPosition position)
+        {
+            var income = CreateDefaultIncome(type, level);
+            return new Building(id, type, level, position, income);
+        }
         [Test]
         public void Grid_Create_ValidSize()
         {
@@ -70,7 +87,7 @@ namespace Tests.Domain
         public void Grid_PlaceBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
             bool result = grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
             Assert.IsTrue(result);
@@ -84,7 +101,7 @@ namespace Tests.Domain
         public void Grid_PlaceBuilding_InvalidPosition_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(1, BuildingType.House, 1, new GridPosition(0, 0));
+            var building = CreateBuilding(1, BuildingType.House, 1, new GridPosition(0, 0));
             
             Assert.IsFalse(grid.PlaceBuilding(building, new Vector2Int(-1, 0)));
             Assert.IsFalse(grid.PlaceBuilding(building, new Vector2Int(32, 32)));
@@ -96,10 +113,10 @@ namespace Tests.Domain
         public void Grid_PlaceBuilding_OccupiedCell_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building1 = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
             grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             
-            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(5, 5));
+            var building2 = CreateBuilding(2, BuildingType.Farm, 1, new GridPosition(5, 5));
             bool result = grid.PlaceBuilding(building2, new Vector2Int(5, 5));
             
             Assert.IsFalse(result);
@@ -121,7 +138,7 @@ namespace Tests.Domain
         public void Grid_GetBuildingAt_Success()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             bool found = grid.GetBuildingAt(new Vector2Int(10, 15), out Building foundBuilding);
@@ -158,7 +175,7 @@ namespace Tests.Domain
         public void Grid_RemoveBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             bool removed = grid.RemoveBuilding(new Vector2Int(10, 15), out Building removedBuilding);
@@ -196,7 +213,7 @@ namespace Tests.Domain
         public void Grid_MoveBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(5, 5));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(5, 5));
             grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
             bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out Building movedBuilding);
@@ -224,7 +241,7 @@ namespace Tests.Domain
         public void Grid_MoveBuilding_InvalidToPosition_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(5, 5));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(5, 5));
             grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
             bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(100, 100), out Building movedBuilding);
@@ -237,8 +254,8 @@ namespace Tests.Domain
         public void Grid_MoveBuilding_ToOccupiedCell_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
-            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building1 = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = CreateBuilding(2, BuildingType.Farm, 1, new GridPosition(10, 10));
             grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             
@@ -264,9 +281,9 @@ namespace Tests.Domain
         public void Grid_GetOccupiedPositions_ReturnsAllPositions()
         {
             var grid = new Grid(32, 32);
-            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
-            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
-            var building3 = new Building(3, BuildingType.Mine, 1, new GridPosition(15, 15));
+            var building1 = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = CreateBuilding(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building3 = CreateBuilding(3, BuildingType.Mine, 1, new GridPosition(15, 15));
             grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             grid.PlaceBuilding(building3, new Vector2Int(15, 15));
@@ -283,8 +300,8 @@ namespace Tests.Domain
         public void Grid_GetAllBuildings_ReturnsAllBuildings()
         {
             var grid = new Grid(32, 32);
-            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
-            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building1 = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = CreateBuilding(2, BuildingType.Farm, 1, new GridPosition(10, 10));
             grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             
@@ -300,9 +317,9 @@ namespace Tests.Domain
         public void Grid_Clear_RemovesAllBuildings()
         {
             var grid = new Grid(32, 32);
-            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
-            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
-            var building3 = new Building(3, BuildingType.Mine, 1, new GridPosition(15, 15));
+            var building1 = CreateBuilding(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = CreateBuilding(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building3 = CreateBuilding(3, BuildingType.Mine, 1, new GridPosition(15, 15));
             grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             grid.PlaceBuilding(building3, new Vector2Int(15, 15));
@@ -322,7 +339,7 @@ namespace Tests.Domain
         public void Grid_HasBuilding_ReturnsTrue_WhenBuildingExists()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             Assert.IsTrue(grid.HasBuilding(42));
@@ -332,7 +349,7 @@ namespace Tests.Domain
         public void Grid_HasBuilding_ReturnsFalse_WhenBuildingNotExists()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(1, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(1, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             Assert.IsFalse(grid.HasBuilding(42));
@@ -343,7 +360,7 @@ namespace Tests.Domain
         public void Grid_GetBuildingPosition_ReturnsPosition_WhenBuildingExists()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(42, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             var position = grid.GetBuildingPosition(42);
@@ -356,7 +373,7 @@ namespace Tests.Domain
         public void Grid_GetBuildingPosition_ReturnsNull_WhenBuildingNotExists()
         {
             var grid = new Grid(32, 32);
-            var building = new Building(1, BuildingType.House, 1, new GridPosition(10, 15));
+            var building = CreateBuilding(1, BuildingType.House, 1, new GridPosition(10, 15));
             grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             var position = grid.GetBuildingPosition(42);
@@ -371,7 +388,7 @@ namespace Tests.Domain
             
             for (int i = 1; i <= 10; i++)
             {
-                var building = new Building(i, BuildingType.House, 1, new GridPosition(i, i));
+                var building = CreateBuilding(i, BuildingType.House, 1, new GridPosition(i, i));
                 grid.PlaceBuilding(building, new Vector2Int(i, i));
             }
             
@@ -391,7 +408,7 @@ namespace Tests.Domain
             
             var grid3 = new Grid(1, 1);
             Assert.AreEqual(1, grid3.TotalCells);
-            var building = new Building(1, BuildingType.House, 1, new GridPosition(0, 0));
+            var building = CreateBuilding(1, BuildingType.House, 1, new GridPosition(0, 0));
             Assert.IsTrue(grid3.PlaceBuilding(building, new Vector2Int(0, 0)));
             Assert.AreEqual(0, grid3.FreeCells);
         }

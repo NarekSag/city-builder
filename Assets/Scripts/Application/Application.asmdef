@@ -6,7 +6,8 @@
         "ContractsInterfaces",
         "MessagePipe",
         "UniTask",
-        "VContainer"
+        "VContainer",
+        "RepositoriesGameplay"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -10,7 +10,7 @@ namespace Domain.Gameplay.Models
         public GridPosition Position { get; set; }
         public Income CurrentIncome { get; private set; }
 
-        public Building(int id, BuildingType type, int level, GridPosition position)
+        public Building(int id, BuildingType type, int level, GridPosition position, Income income)
         {
             if (id <= 0)
             {
@@ -22,11 +22,16 @@ namespace Domain.Gameplay.Models
                 throw new ArgumentException("Level must be between 1 and 3", nameof(level));
             }
 
+            if (income == null)
+            {
+                throw new ArgumentNullException(nameof(income), "Income cannot be null");
+            }
+
             Id = id;
             Type = type;
             Level = level;
             Position = position;
-            CurrentIncome = CalculateIncome(type, level);
+            CurrentIncome = income;
         }
 
         public bool IsValid()
@@ -44,30 +49,21 @@ namespace Domain.Gameplay.Models
             return CurrentIncome;
         }
 
-        public bool Upgrade()
+        public bool Upgrade(Income newIncome)
         {
             if (!CanUpgrade())
             {
                 return false;
             }
 
-            Level++;
-            CurrentIncome = CalculateIncome(Type, Level);
-            return true;
-        }
-
-        private static Income CalculateIncome(BuildingType type, int level)
-        {
-            var baseIncomePerTick = type switch
+            if (newIncome == null)
             {
-                BuildingType.House => 1,
-                BuildingType.Farm => 3,
-                BuildingType.Mine => 5,
-                _ => throw new ArgumentException($"Unknown building type: {type}", nameof(type))
-            };
+                throw new ArgumentNullException(nameof(newIncome), "Income cannot be null");
+            }
 
-            var incomeAmount = baseIncomePerTick * level;
-            return new Income(incomeAmount, type);
+            Level++;
+            CurrentIncome = newIncome;
+            return true;
         }
     }
 }

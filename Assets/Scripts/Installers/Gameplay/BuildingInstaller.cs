@@ -43,6 +43,8 @@ namespace Installers.Gameplay
             builder.Register<IMoveBuildingUseCase, MoveBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IUpgradeBuildingUseCase, UpgradeBuildingUseCase>(Lifetime.Singleton);
 
+            builder.Register<IBuildingConfigService, BuildingConfigService>(Lifetime.Singleton);
+
             var prefabFactory = new BuildingPrefabFactory(_buildingPrefab);
             builder.RegisterInstance<IBuildingPrefabFactory>(prefabFactory);
 

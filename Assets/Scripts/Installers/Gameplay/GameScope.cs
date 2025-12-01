@@ -1,10 +1,7 @@
-using Application.Services;
 using Infrastructure;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
-using Domain.Gameplay.Models;
-using ContractsInterfaces.UseCasesGameplay;
 
 namespace Installers.Gameplay
 {
@@ -15,6 +12,7 @@ namespace Installers.Gameplay
         [SerializeField] private InputInstaller _inputInstaller;
         [SerializeField] private GridInstaller _gridInstaller;
         [SerializeField] private BuildingInstaller _buildingInstaller;
+        [SerializeField] private EconomyInstaller _economyInstaller;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -22,10 +20,7 @@ namespace Installers.Gameplay
             _inputInstaller.Install(builder);
             _gridInstaller.Install(builder);
             _buildingInstaller.Install(builder);
-
-            var economy = new Economy(500);
-            builder.RegisterInstance(economy);
-            builder.Register<IEconomyService, EconomyService>(Lifetime.Singleton);
+            _economyInstaller.Install(builder);
             
             builder.RegisterEntryPoint<GameFlow>();
         }
