@@ -46,6 +46,8 @@ namespace Tests.Domain
             Assert.IsTrue(grid.IsValidPosition(15, 15));
             Assert.IsTrue(grid.IsValidPosition(new Vector2Int(0, 0)));
             Assert.IsTrue(grid.IsValidPosition(new Vector2Int(31, 31)));
+            Assert.IsTrue(grid.IsValidPosition(new GridPosition(0, 0)));
+            Assert.IsTrue(grid.IsValidPosition(new GridPosition(31, 31)));
         }
 
         [Test]
@@ -60,13 +62,16 @@ namespace Tests.Domain
             Assert.IsFalse(grid.IsValidPosition(100, 100));
             Assert.IsFalse(grid.IsValidPosition(new Vector2Int(-1, 0)));
             Assert.IsFalse(grid.IsValidPosition(new Vector2Int(32, 32)));
+            Assert.IsFalse(grid.IsValidPosition(new GridPosition(-1, 0)));
+            Assert.IsFalse(grid.IsValidPosition(new GridPosition(32, 32)));
         }
 
         [Test]
         public void Grid_PlaceBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            bool result = grid.PlaceBuilding(1, new Vector2Int(5, 5));
+            var building = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            bool result = grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
             Assert.IsTrue(result);
             Assert.IsTrue(grid.IsOccupied(5, 5));
@@ -79,10 +84,11 @@ namespace Tests.Domain
         public void Grid_PlaceBuilding_InvalidPosition_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
+            var building = new Building(1, BuildingType.House, 1, new GridPosition(0, 0));
             
-            Assert.IsFalse(grid.PlaceBuilding(1, new Vector2Int(-1, 0)));
-            Assert.IsFalse(grid.PlaceBuilding(1, new Vector2Int(32, 32)));
-            Assert.IsFalse(grid.PlaceBuilding(1, new Vector2Int(100, 100)));
+            Assert.IsFalse(grid.PlaceBuilding(building, new Vector2Int(-1, 0)));
+            Assert.IsFalse(grid.PlaceBuilding(building, new Vector2Int(32, 32)));
+            Assert.IsFalse(grid.PlaceBuilding(building, new Vector2Int(100, 100)));
             Assert.AreEqual(0, grid.OccupiedCells);
         }
 
@@ -90,21 +96,24 @@ namespace Tests.Domain
         public void Grid_PlaceBuilding_OccupiedCell_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(5, 5));
+            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            grid.PlaceBuilding(building1, new Vector2Int(5, 5));
             
-            bool result = grid.PlaceBuilding(2, new Vector2Int(5, 5));
+            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(5, 5));
+            bool result = grid.PlaceBuilding(building2, new Vector2Int(5, 5));
             
             Assert.IsFalse(result);
             Assert.AreEqual(1, grid.OccupiedCells);
         }
 
         [Test]
-        public void Grid_PlaceBuilding_InvalidBuildingId_ReturnsFalse()
+        public void Grid_PlaceBuilding_NullBuilding_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
             
-            Assert.IsFalse(grid.PlaceBuilding(0, new Vector2Int(5, 5)));
-            Assert.IsFalse(grid.PlaceBuilding(-1, new Vector2Int(5, 5)));
+            bool result = grid.PlaceBuilding(null, new Vector2Int(5, 5));
+            
+            Assert.IsFalse(result);
             Assert.AreEqual(0, grid.OccupiedCells);
         }
 
@@ -112,12 +121,15 @@ namespace Tests.Domain
         public void Grid_GetBuildingAt_Success()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(10, 15));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
-            bool found = grid.GetBuildingAt(new Vector2Int(10, 15), out int buildingId);
+            bool found = grid.GetBuildingAt(new Vector2Int(10, 15), out Building foundBuilding);
             
             Assert.IsTrue(found);
-            Assert.AreEqual(42, buildingId);
+            Assert.IsNotNull(foundBuilding);
+            Assert.AreEqual(42, foundBuilding.Id);
+            Assert.AreEqual(BuildingType.House, foundBuilding.Type);
         }
 
         [Test]
@@ -125,10 +137,10 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool found = grid.GetBuildingAt(new Vector2Int(10, 15), out int buildingId);
+            bool found = grid.GetBuildingAt(new Vector2Int(10, 15), out Building building);
             
             Assert.IsFalse(found);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
@@ -136,22 +148,24 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool found = grid.GetBuildingAt(new Vector2Int(-1, 0), out int buildingId);
+            bool found = grid.GetBuildingAt(new Vector2Int(-1, 0), out Building building);
             
             Assert.IsFalse(found);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
         public void Grid_RemoveBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(10, 15));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
-            bool removed = grid.RemoveBuilding(new Vector2Int(10, 15), out int buildingId);
+            bool removed = grid.RemoveBuilding(new Vector2Int(10, 15), out Building removedBuilding);
             
             Assert.IsTrue(removed);
-            Assert.AreEqual(42, buildingId);
+            Assert.IsNotNull(removedBuilding);
+            Assert.AreEqual(42, removedBuilding.Id);
             Assert.IsFalse(grid.IsOccupied(10, 15));
             Assert.AreEqual(0, grid.OccupiedCells);
         }
@@ -161,10 +175,10 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool removed = grid.RemoveBuilding(new Vector2Int(10, 15), out int buildingId);
+            bool removed = grid.RemoveBuilding(new Vector2Int(10, 15), out Building building);
             
             Assert.IsFalse(removed);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
@@ -172,22 +186,24 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool removed = grid.RemoveBuilding(new Vector2Int(-1, 0), out int buildingId);
+            bool removed = grid.RemoveBuilding(new Vector2Int(-1, 0), out Building building);
             
             Assert.IsFalse(removed);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
         public void Grid_MoveBuilding_Success()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(5, 5));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(5, 5));
+            grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
-            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out int buildingId);
+            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out Building movedBuilding);
             
             Assert.IsTrue(moved);
-            Assert.AreEqual(42, buildingId);
+            Assert.IsNotNull(movedBuilding);
+            Assert.AreEqual(42, movedBuilding.Id);
             Assert.IsFalse(grid.IsOccupied(5, 5));
             Assert.IsTrue(grid.IsOccupied(10, 10));
             Assert.AreEqual(1, grid.OccupiedCells);
@@ -198,19 +214,20 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool moved = grid.MoveBuilding(new Vector2Int(-1, 0), new Vector2Int(10, 10), out int buildingId);
+            bool moved = grid.MoveBuilding(new Vector2Int(-1, 0), new Vector2Int(10, 10), out Building building);
             
             Assert.IsFalse(moved);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
         public void Grid_MoveBuilding_InvalidToPosition_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(5, 5));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(5, 5));
+            grid.PlaceBuilding(building, new Vector2Int(5, 5));
             
-            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(100, 100), out int buildingId);
+            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(100, 100), out Building movedBuilding);
             
             Assert.IsFalse(moved);
             Assert.IsTrue(grid.IsOccupied(5, 5));
@@ -220,10 +237,12 @@ namespace Tests.Domain
         public void Grid_MoveBuilding_ToOccupiedCell_ReturnsFalse()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(5, 5));
-            grid.PlaceBuilding(2, new Vector2Int(10, 10));
+            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            grid.PlaceBuilding(building1, new Vector2Int(5, 5));
+            grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             
-            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out int buildingId);
+            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out Building movedBuilding);
             
             Assert.IsFalse(moved);
             Assert.IsTrue(grid.IsOccupied(5, 5));
@@ -235,19 +254,22 @@ namespace Tests.Domain
         {
             var grid = new Grid(32, 32);
             
-            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out int buildingId);
+            bool moved = grid.MoveBuilding(new Vector2Int(5, 5), new Vector2Int(10, 10), out Building building);
             
             Assert.IsFalse(moved);
-            Assert.AreEqual(0, buildingId);
+            Assert.IsNull(building);
         }
 
         [Test]
         public void Grid_GetOccupiedPositions_ReturnsAllPositions()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(5, 5));
-            grid.PlaceBuilding(2, new Vector2Int(10, 10));
-            grid.PlaceBuilding(3, new Vector2Int(15, 15));
+            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building3 = new Building(3, BuildingType.Mine, 1, new GridPosition(15, 15));
+            grid.PlaceBuilding(building1, new Vector2Int(5, 5));
+            grid.PlaceBuilding(building2, new Vector2Int(10, 10));
+            grid.PlaceBuilding(building3, new Vector2Int(15, 15));
             
             var positions = grid.GetOccupiedPositions();
             
@@ -261,24 +283,29 @@ namespace Tests.Domain
         public void Grid_GetAllBuildings_ReturnsAllBuildings()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(5, 5));
-            grid.PlaceBuilding(2, new Vector2Int(10, 10));
+            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            grid.PlaceBuilding(building1, new Vector2Int(5, 5));
+            grid.PlaceBuilding(building2, new Vector2Int(10, 10));
             
             var buildings = grid.GetAllBuildings();
             var buildingsList = System.Linq.Enumerable.ToList(buildings);
             
             Assert.AreEqual(2, buildingsList.Count);
-            Assert.IsTrue(buildingsList.Exists(kvp => kvp.Key == new Vector2Int(5, 5) && kvp.Value == 1));
-            Assert.IsTrue(buildingsList.Exists(kvp => kvp.Key == new Vector2Int(10, 10) && kvp.Value == 2));
+            Assert.IsTrue(buildingsList.Exists(kvp => kvp.Key == new Vector2Int(5, 5) && kvp.Value.Id == 1));
+            Assert.IsTrue(buildingsList.Exists(kvp => kvp.Key == new Vector2Int(10, 10) && kvp.Value.Id == 2));
         }
 
         [Test]
         public void Grid_Clear_RemovesAllBuildings()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(5, 5));
-            grid.PlaceBuilding(2, new Vector2Int(10, 10));
-            grid.PlaceBuilding(3, new Vector2Int(15, 15));
+            var building1 = new Building(1, BuildingType.House, 1, new GridPosition(5, 5));
+            var building2 = new Building(2, BuildingType.Farm, 1, new GridPosition(10, 10));
+            var building3 = new Building(3, BuildingType.Mine, 1, new GridPosition(15, 15));
+            grid.PlaceBuilding(building1, new Vector2Int(5, 5));
+            grid.PlaceBuilding(building2, new Vector2Int(10, 10));
+            grid.PlaceBuilding(building3, new Vector2Int(15, 15));
             
             Assert.AreEqual(3, grid.OccupiedCells);
             
@@ -295,7 +322,8 @@ namespace Tests.Domain
         public void Grid_HasBuilding_ReturnsTrue_WhenBuildingExists()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(10, 15));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             Assert.IsTrue(grid.HasBuilding(42));
         }
@@ -304,7 +332,8 @@ namespace Tests.Domain
         public void Grid_HasBuilding_ReturnsFalse_WhenBuildingNotExists()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(10, 15));
+            var building = new Building(1, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             Assert.IsFalse(grid.HasBuilding(42));
             Assert.IsFalse(grid.HasBuilding(0));
@@ -314,7 +343,8 @@ namespace Tests.Domain
         public void Grid_GetBuildingPosition_ReturnsPosition_WhenBuildingExists()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(42, new Vector2Int(10, 15));
+            var building = new Building(42, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             var position = grid.GetBuildingPosition(42);
             
@@ -326,7 +356,8 @@ namespace Tests.Domain
         public void Grid_GetBuildingPosition_ReturnsNull_WhenBuildingNotExists()
         {
             var grid = new Grid(32, 32);
-            grid.PlaceBuilding(1, new Vector2Int(10, 15));
+            var building = new Building(1, BuildingType.House, 1, new GridPosition(10, 15));
+            grid.PlaceBuilding(building, new Vector2Int(10, 15));
             
             var position = grid.GetBuildingPosition(42);
             
@@ -340,7 +371,8 @@ namespace Tests.Domain
             
             for (int i = 1; i <= 10; i++)
             {
-                grid.PlaceBuilding(i, new Vector2Int(i, i));
+                var building = new Building(i, BuildingType.House, 1, new GridPosition(i, i));
+                grid.PlaceBuilding(building, new Vector2Int(i, i));
             }
             
             Assert.AreEqual(10, grid.OccupiedCells);
@@ -359,9 +391,9 @@ namespace Tests.Domain
             
             var grid3 = new Grid(1, 1);
             Assert.AreEqual(1, grid3.TotalCells);
-            Assert.IsTrue(grid3.PlaceBuilding(1, new Vector2Int(0, 0)));
+            var building = new Building(1, BuildingType.House, 1, new GridPosition(0, 0));
+            Assert.IsTrue(grid3.PlaceBuilding(building, new Vector2Int(0, 0)));
             Assert.AreEqual(0, grid3.FreeCells);
         }
     }
 }
-

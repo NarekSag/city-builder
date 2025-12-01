@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ namespace Domain.Gameplay.Models
 {
     public class Grid
     {
-        private readonly Dictionary<Vector2Int, int> _buildings;
+        private readonly Dictionary<Vector2Int, Building> _buildings;
         private readonly int _width;
         private readonly int _height;
 
@@ -25,7 +26,7 @@ namespace Domain.Gameplay.Models
 
             _width = width;
             _height = height;
-            _buildings = new Dictionary<Vector2Int, int>();
+            _buildings = new Dictionary<Vector2Int, Building>();
         }
 
         public int Width => _width;
@@ -45,6 +46,11 @@ namespace Domain.Gameplay.Models
             return x >= 0 && x < _width && y >= 0 && y < _height;
         }
 
+        public bool IsValidPosition(GridPosition position)
+        {
+            return position.IsValid(_width, _height);
+        }
+
         public bool IsOccupied(Vector2Int position)
         {
             return _buildings.ContainsKey(position);
@@ -55,27 +61,37 @@ namespace Domain.Gameplay.Models
             return IsOccupied(new Vector2Int(x, y));
         }
 
-        public bool GetBuildingAt(Vector2Int position, out int buildingId)
+        public bool IsOccupied(GridPosition position)
         {
-            buildingId = 0;
+            return IsOccupied(position.X, position.Y);
+        }
+
+        public bool GetBuildingAt(Vector2Int position, out Building building)
+        {
+            building = null;
 
             if (!IsValidPosition(position))
             {
                 return false;
             }
 
-            if (_buildings.TryGetValue(position, out var id))
+            if (_buildings.TryGetValue(position, out var foundBuilding))
             {
-                buildingId = id;
+                building = foundBuilding;
                 return true;
             }
 
             return false;
         }
 
-        public bool PlaceBuilding(int buildingId, Vector2Int position)
+        public bool GetBuildingAt(GridPosition position, out Building building)
         {
-            if (buildingId <= 0)
+            return GetBuildingAt(new Vector2Int(position.X, position.Y), out building);
+        }
+
+        public bool PlaceBuilding(Building building, Vector2Int position)
+        {
+            if (building == null)
             {
                 return false;
             }
@@ -90,20 +106,26 @@ namespace Domain.Gameplay.Models
                 return false;
             }
 
-            _buildings[position] = buildingId;
+            building.Position = new GridPosition(position);
+            _buildings[position] = building;
             return true;
         }
 
-        public bool RemoveBuilding(Vector2Int position, out int buildingId)
+        public bool PlaceBuilding(Building building, GridPosition position)
         {
-            buildingId = 0;
+            return PlaceBuilding(building, new Vector2Int(position.X, position.Y));
+        }
+
+        public bool RemoveBuilding(Vector2Int position, out Building building)
+        {
+            building = null;
 
             if (!IsValidPosition(position))
             {
                 return false;
             }
 
-            if (!_buildings.TryGetValue(position, out buildingId))
+            if (!_buildings.TryGetValue(position, out building))
             {
                 return false;
             }
@@ -112,16 +134,21 @@ namespace Domain.Gameplay.Models
             return true;
         }
 
-        public bool MoveBuilding(Vector2Int from, Vector2Int to, out int buildingId)
+        public bool RemoveBuilding(GridPosition position, out Building building)
         {
-            buildingId = 0;
+            return RemoveBuilding(new Vector2Int(position.X, position.Y), out building);
+        }
+
+        public bool MoveBuilding(Vector2Int from, Vector2Int to, out Building building)
+        {
+            building = null;
 
             if (!IsValidPosition(from) || !IsValidPosition(to))
             {
                 return false;
             }
 
-            if (!GetBuildingAt(from, out buildingId))
+            if (!GetBuildingAt(from, out building))
             {
                 return false;
             }
@@ -132,8 +159,14 @@ namespace Domain.Gameplay.Models
             }
 
             _buildings.Remove(from);
-            _buildings[to] = buildingId;
+            building.Position = new GridPosition(to);
+            _buildings[to] = building;
             return true;
+        }
+
+        public bool MoveBuilding(GridPosition from, GridPosition to, out Building building)
+        {
+            return MoveBuilding(new Vector2Int(from.X, from.Y), new Vector2Int(to.X, to.Y), out building);
         }
 
         public IEnumerable<Vector2Int> GetOccupiedPositions()
@@ -141,7 +174,7 @@ namespace Domain.Gameplay.Models
             return _buildings.Keys;
         }
 
-        public IEnumerable<KeyValuePair<Vector2Int, int>> GetAllBuildings()
+        public IEnumerable<KeyValuePair<Vector2Int, Building>> GetAllBuildings()
         {
             return _buildings;
         }
@@ -153,14 +186,14 @@ namespace Domain.Gameplay.Models
 
         public bool HasBuilding(int buildingId)
         {
-            return _buildings.Values.Contains(buildingId);
+            return _buildings.Values.Any(b => b.Id == buildingId);
         }
 
         public Vector2Int? GetBuildingPosition(int buildingId)
         {
             foreach (var kvp in _buildings)
             {
-                if (kvp.Value == buildingId)
+                if (kvp.Value.Id == buildingId)
                 {
                     return kvp.Key;
                 }
@@ -168,6 +201,11 @@ namespace Domain.Gameplay.Models
 
             return null;
         }
+
+        public GridPosition? GetBuildingGridPosition(int buildingId)
+        {
+            var position = GetBuildingPosition(buildingId);
+            return position.HasValue ? new GridPosition(position.Value) : null;
+        }
     }
 }
-

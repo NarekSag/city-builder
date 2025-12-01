@@ -1,4 +1,7 @@
 using System;
+using Domain.Gameplay.MessagesDTO;
+using Domain.Gameplay.Models;
+using MessagePipe;
 using Presentation.Gameplay.Views;
 using UnityEngine;
 using VContainer;
@@ -11,6 +14,9 @@ namespace Presentation.Gameplay.Presenters
     {
         [Inject] private Grid _grid;
         [Inject] private GridView _view;
+        [Inject] private IPublisher<PlaceBuildingRequestDTO> _placeBuildingPublisher;
+
+        private BuildingType _selectedBuildingType = BuildingType.House;
 
         public void Initialize()
         {
@@ -19,6 +25,11 @@ namespace Presentation.Gameplay.Presenters
             _view.OnCellClicked += HandleCellClicked;
 
             Debug.Log("[GridPresenter] Initialized");
+        }
+
+        public void SetSelectedBuildingType(BuildingType buildingType)
+        {
+            _selectedBuildingType = buildingType;
         }
 
         private void HandleCellHovered(Vector2Int position)
@@ -45,7 +56,17 @@ namespace Presentation.Gameplay.Presenters
 
         private void HandleCellClicked(Vector2Int position)
         {
-            Debug.Log($"Clicked on cell {position}");
+            if (!_grid.IsValidPosition(position))
+            {
+                return;
+            }
+
+            var gridPosition = new GridPosition(position);
+            _placeBuildingPublisher.Publish(new PlaceBuildingRequestDTO
+            {
+                BuildingType = _selectedBuildingType,
+                Position = gridPosition
+            });
         }
 
         public void Dispose()
