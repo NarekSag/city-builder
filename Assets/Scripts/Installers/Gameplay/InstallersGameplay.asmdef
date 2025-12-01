@@ -8,7 +8,11 @@
         "Presentation",
         "ContractsInterfaces",
         "VContainer",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "MessagePipe",
+        "UseCasesGameplay",
+        "Application",
+        "MessagePipe.VContainer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

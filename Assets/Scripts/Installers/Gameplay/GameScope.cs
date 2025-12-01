@@ -8,16 +8,17 @@ namespace Installers.Gameplay
     public class GameScope : LifetimeScope
     {
         [Header("Installers")]
-        [Tooltip("Список MonoBehaviour компонентов, реализующих IInstaller. Добавьте CameraInstaller и другие Installers.")]
         [SerializeField] private CameraInstaller _cameraInstaller;
         [SerializeField] private InputInstaller _inputInstaller;
         [SerializeField] private GridInstaller _gridInstaller;
+        [SerializeField] private BuildingInstaller _buildingInstaller;
 
         protected override void Configure(IContainerBuilder builder)
         {
             _cameraInstaller.Install(builder);
             _inputInstaller.Install(builder);
             _gridInstaller.Install(builder);
+            _buildingInstaller.Install(builder);
             
             builder.RegisterEntryPoint<GameFlow>();
         }

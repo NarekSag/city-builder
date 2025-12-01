@@ -2,8 +2,8 @@
     "name": "Application",
     "rootNamespace": "Application",
     "references": [
-        "3d38ae08dc720d748a0e9a6373ddf9ff",
-        "d92de8f3c760b7c48a37a6bc583e3a15"
+        "Domain",
+        "ContractsInterfaces"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -5,7 +5,9 @@
         "Domain",
         "VContainer",
         "Unity.InputSystem",
-        "ContractsInterfaces"
+        "ContractsInterfaces",
+        "MessagePipe",
+        "UniTask"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

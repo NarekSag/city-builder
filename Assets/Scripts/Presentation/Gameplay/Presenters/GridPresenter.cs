@@ -58,15 +58,19 @@ namespace Presentation.Gameplay.Presenters
         {
             if (!_grid.IsValidPosition(position))
             {
+                Debug.LogWarning($"[GridPresenter] Invalid position clicked: {position}");
                 return;
             }
 
             var gridPosition = new GridPosition(position);
-            _placeBuildingPublisher.Publish(new PlaceBuildingRequestDTO
+            var request = new PlaceBuildingRequestDTO
             {
                 BuildingType = _selectedBuildingType,
                 Position = gridPosition
-            });
+            };
+
+            Debug.Log($"[GridPresenter] Publishing PlaceBuildingRequestDTO: Type={_selectedBuildingType}, Position={gridPosition}");
+            _placeBuildingPublisher.Publish(request);
         }
 
         public void Dispose()

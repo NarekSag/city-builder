@@ -10,6 +10,7 @@ namespace Infrastructure.Grid
         [Inject] private Domain.Gameplay.Models.Grid _grid;
         [Inject] private IGridFactory _gridFactory;
         [Inject] private GridView _gridView;
+        [Inject] private BuildingView _buildingView;
 
         public void Initialize()
         {
@@ -25,6 +26,14 @@ namespace Infrastructure.Grid
 
             var cellRenderers = _gridFactory.CreateGridCells(_grid, parent.transform);
             _gridView.SetCellRenderers(cellRenderers);
+
+            if (_buildingView != null)
+            {
+                var buildingsParent = new GameObject("Buildings");
+                buildingsParent.transform.SetParent(_gridView.transform);
+                buildingsParent.transform.localPosition = Vector3.zero;
+                _buildingView.Initialize(buildingsParent.transform);
+            }
 
             Debug.Log($"[GridInitializer] Grid initialized: {_grid.Width}x{_grid.Height}");
         }

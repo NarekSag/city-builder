@@ -16,22 +16,23 @@ namespace Presentation.Gameplay.Views
         [Inject] private Grid _grid;
 
         private Dictionary<Vector2Int, Renderer> _cellRenderers;
+        private Dictionary<Vector2Int, Material> _originalMaterials;
         private Vector2Int? _lastHoverCell;
-        private Material _defaultMaterial;
-
-        private Material GetDefaultMaterial()
-        {
-            if (_cellRenderers.Count == 0) return null;
-
-            var firstRenderer = _cellRenderers.Values.GetEnumerator();
-            firstRenderer.MoveNext();
-            return firstRenderer.Current?.material;
-        }
 
         public void HighlightCell(Vector2Int pos, Color color)
         {
             if (_cellRenderers.TryGetValue(pos, out var cellRenderer))
             {
+                if (_lastHoverCell.HasValue && _lastHoverCell.Value != pos)
+                {
+                    ClearPreviousHighlight();
+                }
+
+                if (!_originalMaterials.ContainsKey(pos))
+                {
+                    _originalMaterials[pos] = cellRenderer.material;
+                }
+
                 cellRenderer.material.color = color;
                 _lastHoverCell = pos;
             }
@@ -39,20 +40,38 @@ namespace Presentation.Gameplay.Views
 
         public void ClearHighlight()
         {
+            ClearPreviousHighlight();
+            _lastHoverCell = null;
+        }
+
+        private void ClearPreviousHighlight()
+        {
             if (_lastHoverCell.HasValue &&
                 _cellRenderers.TryGetValue(_lastHoverCell.Value, out var cellRenderer) &&
-                _defaultMaterial != null)
+                _originalMaterials.TryGetValue(_lastHoverCell.Value, out var originalMaterial))
             {
-                cellRenderer.material = _defaultMaterial;
+                if (cellRenderer != null && originalMaterial != null)
+                {
+                    cellRenderer.material.color = originalMaterial.color;
+                }
             }
-
-            _lastHoverCell = null;
         }
 
         public void SetCellRenderers(Dictionary<Vector2Int, Renderer> cellRenderers)
         {
             _cellRenderers = cellRenderers;
-            _defaultMaterial = GetDefaultMaterial();
+            _originalMaterials = new Dictionary<Vector2Int, Material>();
+
+            foreach (var kvp in _cellRenderers)
+            {
+                if (kvp.Value != null && kvp.Value.material != null)
+                {
+                    var originalColor = kvp.Value.material.color;
+                    var materialCopy = new Material(kvp.Value.material);
+                    materialCopy.color = originalColor;
+                    _originalMaterials[kvp.Key] = materialCopy;
+                }
+            }
         }
 
         private void Update()
@@ -64,15 +83,25 @@ namespace Presentation.Gameplay.Views
             if (gridPos.HasValue)
             {
                 if (_lastHoverCell != gridPos)
+                {
+                    if (_lastHoverCell.HasValue)
+                    {
+                        ClearPreviousHighlight();
+                    }
                     OnCellHovered?.Invoke(gridPos.Value);
+                }
 
                 if (Mouse.current.leftButton.wasPressedThisFrame)
+                {
                     OnCellClicked?.Invoke(gridPos.Value);
+                }
             }
             else
             {
                 if (_lastHoverCell.HasValue)
+                {
                     OnCellHoverExit?.Invoke();
+                }
             }
         }
 
