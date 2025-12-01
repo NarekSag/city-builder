@@ -25,12 +25,10 @@ namespace UseCases.Gameplay
         public void Initialize()
         {
             _subscription = _placeBuildingRequestSubscriber.Subscribe(Handle);
-            Debug.Log("[PlaceBuildingUseCase] Initialized and subscribed to PlaceBuildingRequestDTO");
         }
 
         private void Handle(PlaceBuildingRequestDTO request)
         {
-            Debug.Log($"[PlaceBuildingUseCase] Received PlaceBuildingRequestDTO: Type={request?.BuildingType}, Position={request?.Position}");
             PlaceBuilding(request);
         }
 
@@ -84,7 +82,6 @@ namespace UseCases.Gameplay
                 Position = building.Position
             };
 
-            Debug.Log($"[PlaceBuildingUseCase] Publishing BuildingPlacedDTO: Id={placedDto.BuildingId}, Type={placedDto.BuildingType}, Position={placedDto.Position}");
             _buildingPlacedPublisher.Publish(placedDto);
         }
 

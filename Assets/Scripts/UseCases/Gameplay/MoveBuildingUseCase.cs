@@ -22,12 +22,10 @@ namespace UseCases.Gameplay
         public void Initialize()
         {
             _subscription = _moveBuildingRequestSubscriber.Subscribe(Handle);
-            Debug.Log("[MoveBuildingUseCase] Initialized and subscribed to MoveBuildingRequestDTO");
         }
 
         private void Handle(MoveBuildingRequestDTO request)
         {
-            Debug.Log($"[MoveBuildingUseCase] Received MoveBuildingRequestDTO: BuildingId={request?.BuildingId}, NewPosition={request?.NewPosition}");
             MoveBuilding(request);
         }
 
@@ -79,7 +77,6 @@ namespace UseCases.Gameplay
                 NewPosition = request.NewPosition
             };
 
-            Debug.Log($"[MoveBuildingUseCase] Publishing BuildingMovedDTO: Id={movedDto.BuildingId}, From={movedDto.OldPosition}, To={movedDto.NewPosition}");
             _buildingMovedPublisher.Publish(movedDto);
         }
 

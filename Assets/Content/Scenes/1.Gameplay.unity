@@ -481,7 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 137cf945e2a97fc42b10d057dbb01673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: InstallersGameplay::Installers.Gameplay.BuildingInstaller
-  _housePrefab: {fileID: 1816838802365733155, guid: ca69bad1ffafaa743b5d4df28e02ba05, type: 3}
+  _buildingPrefab: {fileID: 1816838802365733155, guid: ca69bad1ffafaa743b5d4df28e02ba05, type: 3}
   _buildingView: {fileID: 625765978}
 --- !u!4 &564807361
 Transform:

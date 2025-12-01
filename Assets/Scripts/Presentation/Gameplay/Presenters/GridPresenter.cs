@@ -1,4 +1,5 @@
 using System;
+using ContractsInterfaces.Infrastructure;
 using Domain.Gameplay.MessagesDTO;
 using Domain.Gameplay.Models;
 using MessagePipe;
@@ -15,27 +16,49 @@ namespace Presentation.Gameplay.Presenters
         [Inject] private Grid _grid;
         [Inject] private GridView _view;
         [Inject] private IPublisher<PlaceBuildingRequestDTO> _placeBuildingPublisher;
+        [Inject] private IInputAdapter _inputAdapter;
 
         private BuildingType _selectedBuildingType = BuildingType.House;
 
         public void Initialize()
         {
-            _view.OnCellHovered += HandleCellHovered;
-            _view.OnCellHoverExit += HandleCellHoverExit;
-            _view.OnCellClicked += HandleCellClicked;
-
-            Debug.Log("[GridPresenter] Initialized");
+            _view.OnWorldPositionHovered += HandleWorldPositionHovered;
+            _view.OnHoverExit += HandleHoverExit;
+            _view.OnWorldPositionClicked += HandleWorldPositionClicked;
         }
 
-        public void SetSelectedBuildingType(BuildingType buildingType)
+        private void CheckHotkeys()
         {
-            _selectedBuildingType = buildingType;
+            if (_inputAdapter == null)
+            {
+                return;
+            }
+
+            if (_inputAdapter.IsBuilding1Pressed())
+            {
+                _selectedBuildingType = BuildingType.House;
+            }
+            else if (_inputAdapter.IsBuilding2Pressed())
+            {
+                _selectedBuildingType = BuildingType.Farm;
+            }
+            else if (_inputAdapter.IsBuilding3Pressed())
+            {
+                _selectedBuildingType = BuildingType.Mine;
+            }
         }
 
-        private void HandleCellHovered(Vector2Int position)
+        private void HandleWorldPositionHovered(Vector3 worldPosition)
         {
-            if (_grid == null) return;
+            CheckHotkeys();
+            
+            var gridPosition = WorldToGridPosition(worldPosition);
+            if (!gridPosition.HasValue)
+            {
+                return;
+            }
 
+            var position = gridPosition.Value;
             Color color;
             if (!_grid.IsValidPosition(position) || _grid.IsOccupied(position))
             {
@@ -49,35 +72,52 @@ namespace Presentation.Gameplay.Presenters
             _view.HighlightCell(position, color);
         }
 
-        private void HandleCellHoverExit()
+        private void HandleHoverExit()
         {
             _view.ClearHighlight();
         }
 
-        private void HandleCellClicked(Vector2Int position)
+        private void HandleWorldPositionClicked(Vector3 worldPosition)
         {
-            if (!_grid.IsValidPosition(position))
+            CheckHotkeys();
+            
+            var gridPosition = WorldToGridPosition(worldPosition);
+            if (!gridPosition.HasValue)
             {
-                Debug.LogWarning($"[GridPresenter] Invalid position clicked: {position}");
                 return;
             }
 
-            var gridPosition = new GridPosition(position);
+            var position = gridPosition.Value;
+            if (!_grid.IsValidPosition(position))
+            {
+                return;
+            }
+
+            var gridPos = new GridPosition(position);
             var request = new PlaceBuildingRequestDTO
             {
                 BuildingType = _selectedBuildingType,
-                Position = gridPosition
+                Position = gridPos
             };
 
-            Debug.Log($"[GridPresenter] Publishing PlaceBuildingRequestDTO: Type={_selectedBuildingType}, Position={gridPosition}");
             _placeBuildingPublisher.Publish(request);
+        }
+
+        private Vector2Int? WorldToGridPosition(Vector3 worldPosition)
+        {
+            if (_grid == null) return null;
+
+            int gx = Mathf.RoundToInt(worldPosition.x + (_grid.Width - 1) * 0.5f);
+            int gy = Mathf.RoundToInt(worldPosition.z + (_grid.Height - 1) * 0.5f);
+
+            return new Vector2Int(gx, gy);
         }
 
         public void Dispose()
         {
-            _view.OnCellHovered -= HandleCellHovered;
-            _view.OnCellHoverExit -= HandleCellHoverExit;
-            _view.OnCellClicked -= HandleCellClicked;
+            _view.OnWorldPositionHovered -= HandleWorldPositionHovered;
+            _view.OnHoverExit -= HandleHoverExit;
+            _view.OnWorldPositionClicked -= HandleWorldPositionClicked;
         }
     }
 }

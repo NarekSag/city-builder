@@ -17,7 +17,7 @@ namespace Installers.Gameplay
     public class BuildingInstaller : MonoBehaviour, IInstaller
     {
         [Header("Building Prefabs")]
-        [SerializeField] private GameObject _housePrefab;
+        [SerializeField] private GameObject _buildingPrefab;
 
         [Header("Building Components")]
         [SerializeField] private BuildingView _buildingView;
@@ -43,7 +43,7 @@ namespace Installers.Gameplay
             builder.Register<IRemoveBuildingUseCase, RemoveBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IMoveBuildingUseCase, MoveBuildingUseCase>(Lifetime.Singleton);
 
-            var prefabFactory = new BuildingPrefabFactory(_housePrefab);
+            var prefabFactory = new BuildingPrefabFactory(_buildingPrefab);
             builder.RegisterInstance<IBuildingPrefabFactory>(prefabFactory);
 
             if (_buildingView == null)

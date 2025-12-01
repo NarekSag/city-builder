@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using VContainer;
-using Grid = Domain.Gameplay.Models.Grid;
 
 namespace Presentation.Gameplay.Views
 {
     public class GridView : MonoBehaviour
     {
-        public event Action<Vector2Int> OnCellHovered;
-        public event Action OnCellHoverExit;
-        public event Action<Vector2Int> OnCellClicked;
-
-        [Inject] private Grid _grid;
+        public event Action<Vector3> OnWorldPositionHovered;
+        public event Action OnHoverExit;
+        public event Action<Vector3> OnWorldPositionClicked;
 
         private Dictionary<Vector2Int, Renderer> _cellRenderers;
         private Dictionary<Vector2Int, Material> _originalMaterials;
@@ -76,57 +72,36 @@ namespace Presentation.Gameplay.Views
 
         private void Update()
         {
-            if (_grid == null || Mouse.current == null) return;
+            if (Mouse.current == null) return;
 
-            var gridPos = GetGridPositionFromRaycast();
+            var worldPos = GetWorldPositionFromRaycast();
 
-            if (gridPos.HasValue)
+            if (worldPos.HasValue)
             {
-                if (_lastHoverCell != gridPos)
-                {
-                    if (_lastHoverCell.HasValue)
-                    {
-                        ClearPreviousHighlight();
-                    }
-                    OnCellHovered?.Invoke(gridPos.Value);
-                }
+                OnWorldPositionHovered?.Invoke(worldPos.Value);
 
                 if (Mouse.current.leftButton.wasPressedThisFrame)
                 {
-                    OnCellClicked?.Invoke(gridPos.Value);
+                    OnWorldPositionClicked?.Invoke(worldPos.Value);
                 }
             }
             else
             {
                 if (_lastHoverCell.HasValue)
                 {
-                    OnCellHoverExit?.Invoke();
+                    OnHoverExit?.Invoke();
                 }
             }
         }
 
-        private Vector2Int? GetGridPositionFromRaycast()
+        private Vector3? GetWorldPositionFromRaycast()
         {
             if (Camera.main == null || Mouse.current == null) return null;
 
             var mousePosition = Mouse.current.position.ReadValue();
             var ray = Camera.main.ScreenPointToRay(mousePosition);
 
-            return Physics.Raycast(ray, out var hit)
-                ? GetGridPositionFromWorld(hit.point)
-                : null;
-        }
-
-        private Vector2Int? GetGridPositionFromWorld(Vector3 worldPosition)
-        {
-            if (_grid == null) return null;
-
-            int gx = Mathf.RoundToInt(worldPosition.x + (_grid.Width - 1) * 0.5f);
-            int gy = Mathf.RoundToInt(worldPosition.z + (_grid.Height - 1) * 0.5f);
-
-            var position = new Vector2Int(gx, gy);
-
-            return _grid.IsValidPosition(position) ? position : null;
+            return Physics.Raycast(ray, out var hit) ? hit.point : null;
         }
     }
 }

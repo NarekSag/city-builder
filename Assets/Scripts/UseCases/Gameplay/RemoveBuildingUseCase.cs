@@ -21,12 +21,10 @@ namespace UseCases.Gameplay
         public void Initialize()
         {
             _subscription = _removeBuildingRequestSubscriber.Subscribe(Handle);
-            Debug.Log("[RemoveBuildingUseCase] Initialized and subscribed to RemoveBuildingRequestDTO");
         }
 
         private void Handle(RemoveBuildingRequestDTO request)
         {
-            Debug.Log($"[RemoveBuildingUseCase] Received RemoveBuildingRequestDTO: BuildingId={request?.BuildingId}, Position={request?.Position}");
             RemoveBuilding(request);
         }
 
@@ -85,7 +83,6 @@ namespace UseCases.Gameplay
                 Position = position
             };
 
-            Debug.Log($"[RemoveBuildingUseCase] Publishing BuildingRemovedDTO: Id={removedDto.BuildingId}, Type={removedDto.BuildingType}, Position={removedDto.Position}");
             _buildingRemovedPublisher.Publish(removedDto);
         }
 

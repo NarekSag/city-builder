@@ -1,4 +1,5 @@
 using ContractsInterfaces.Infrastructure;
+using Presentation.Gameplay.Presenters;
 using Presentation.Gameplay.Views;
 using UnityEngine;
 using VContainer;
@@ -10,6 +11,7 @@ namespace Infrastructure.Grid
         [Inject] private Domain.Gameplay.Models.Grid _grid;
         [Inject] private IGridFactory _gridFactory;
         [Inject] private GridView _gridView;
+        [Inject] private GridPresenter _gridPresenter;
         [Inject] private BuildingView _buildingView;
 
         public void Initialize()
