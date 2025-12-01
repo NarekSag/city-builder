@@ -1,13 +1,8 @@
 {
-    "name": "Infrastructure",
-    "rootNamespace": "Infrastructure",
+    "name": "RepositoriesGameplay",
+    "rootNamespace": "Repositories.Gameplay",
     "references": [
-        "Domain",
-        "ContractsInterfaces",
-        "Application",
-        "RepositoriesGameplay",
-        "Unity.InputSystem",
-        "VContainer"
+        "Domain"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -19,3 +14,4 @@
     "versionDefines": [],
     "noEngineReferences": false
 }
+

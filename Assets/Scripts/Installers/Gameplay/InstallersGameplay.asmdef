@@ -1,13 +1,12 @@
 {
-    "name": "Infrastructure",
-    "rootNamespace": "Infrastructure",
+    "name": "InstallersGameplay",
+    "rootNamespace": "Installers.Gameplay",
     "references": [
-        "Domain",
-        "ContractsInterfaces",
-        "Application",
+        "Infrastructure",
         "RepositoriesGameplay",
-        "Unity.InputSystem",
-        "VContainer"
+        "ContractsInterfaces",
+        "VContainer",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
