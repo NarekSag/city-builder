@@ -58,15 +58,15 @@ namespace Domain.Gameplay.Models
 
         private static Income CalculateIncome(BuildingType type, int level)
         {
-            var baseIncome = type switch
+            var baseIncomePerTick = type switch
             {
-                BuildingType.House => 10,
-                BuildingType.Farm => 15,
-                BuildingType.Mine => 25,
+                BuildingType.House => 1,
+                BuildingType.Farm => 3,
+                BuildingType.Mine => 5,
                 _ => throw new ArgumentException($"Unknown building type: {type}", nameof(type))
             };
 
-            var incomeAmount = baseIncome * level;
+            var incomeAmount = baseIncomePerTick * level;
             return new Income(incomeAmount, type);
         }
     }

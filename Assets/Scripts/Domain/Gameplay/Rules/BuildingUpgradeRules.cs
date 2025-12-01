@@ -4,9 +4,9 @@ namespace Domain.Gameplay.Rules
 {
     public static class BuildingUpgradeRules
     {
-        private const int HouseBaseIncome = 10;
-        private const int FarmBaseIncome = 15;
-        private const int MineBaseIncome = 25;
+        private const int HouseBaseIncome = 1;
+        private const int FarmBaseIncome = 3;
+        private const int MineBaseIncome = 5;
 
         public static bool CanUpgrade(Models.Building building, int maxLevel = 3)
         {

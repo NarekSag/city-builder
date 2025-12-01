@@ -95,7 +95,7 @@ namespace UseCases.Gameplay
             {
                 BuildingId = building.Id,
                 NewLevel = building.Level,
-                NewIncome = building.CurrentIncome.AmountPerMinute
+                NewIncome = building.CurrentIncome.AmountPerTick
             };
 
             _buildingUpgradedPublisher.Publish(upgradedDto);

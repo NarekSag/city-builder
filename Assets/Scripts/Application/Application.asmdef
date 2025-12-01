@@ -3,7 +3,10 @@
     "rootNamespace": "Application",
     "references": [
         "Domain",
-        "ContractsInterfaces"
+        "ContractsInterfaces",
+        "MessagePipe",
+        "UniTask",
+        "VContainer"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

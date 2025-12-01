@@ -1,7 +1,10 @@
+using Application.Services;
 using Infrastructure;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using Domain.Gameplay.Models;
+using ContractsInterfaces.UseCasesGameplay;
 
 namespace Installers.Gameplay
 {
@@ -19,6 +22,10 @@ namespace Installers.Gameplay
             _inputInstaller.Install(builder);
             _gridInstaller.Install(builder);
             _buildingInstaller.Install(builder);
+
+            var economy = new Economy(500);
+            builder.RegisterInstance(economy);
+            builder.Register<IEconomyService, EconomyService>(Lifetime.Singleton);
             
             builder.RegisterEntryPoint<GameFlow>();
         }

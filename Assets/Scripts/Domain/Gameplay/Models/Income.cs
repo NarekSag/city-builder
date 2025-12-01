@@ -4,17 +4,17 @@ namespace Domain.Gameplay.Models
 {
     public class Income
     {
-        public int AmountPerMinute { get; }
+        public int AmountPerTick { get; }
         public BuildingType Type { get; }
 
-        public Income(int amountPerMinute, BuildingType type)
+        public Income(int amountPerTick, BuildingType type)
         {
-            if (amountPerMinute < 0)
+            if (amountPerTick < 0)
             {
-                throw new ArgumentException("AmountPerMinute must be greater than or equal to 0", nameof(amountPerMinute));
+                throw new ArgumentException("AmountPerTick must be greater than or equal to 0", nameof(amountPerTick));
             }
 
-            AmountPerMinute = amountPerMinute;
+            AmountPerTick = amountPerTick;
             Type = type;
         }
     }

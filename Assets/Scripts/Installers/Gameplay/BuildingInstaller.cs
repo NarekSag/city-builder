@@ -36,11 +36,7 @@ namespace Installers.Gameplay
             builder.RegisterMessageBroker<BuildingMovedDTO>(options);
             builder.RegisterMessageBroker<UpgradeBuildingRequestDTO>(options);
             builder.RegisterMessageBroker<BuildingUpgradedDTO>(options);
-
-            var economy = new Economy(500);
-            builder.RegisterInstance(economy);
-
-            builder.Register<IEconomyService, EconomyService>(Lifetime.Singleton);
+            builder.RegisterMessageBroker<GoldChangedDTO>(options);
 
             builder.Register<IPlaceBuildingUseCase, PlaceBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IRemoveBuildingUseCase, RemoveBuildingUseCase>(Lifetime.Singleton);
