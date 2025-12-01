@@ -9,14 +9,28 @@ namespace Infrastructure.Buildings
     public class BuildingInitializer
     {
         [Inject] private IPlaceBuildingUseCase _placeBuildingUseCase;
+        [Inject] private IRemoveBuildingUseCase _removeBuildingUseCase;
+        [Inject] private IMoveBuildingUseCase _moveBuildingUseCase;
         [Inject] private BuildingPresenter _buildingPresenter;
 
         public void Initialize()
         {
-            if (_placeBuildingUseCase is PlaceBuildingUseCase useCase)
+            if (_placeBuildingUseCase is PlaceBuildingUseCase placeUseCase)
             {
-                useCase.Initialize();
+                placeUseCase.Initialize();
                 Debug.Log("[BuildingInitializer] PlaceBuildingUseCase initialized");
+            }
+
+            if (_removeBuildingUseCase is RemoveBuildingUseCase removeUseCase)
+            {
+                removeUseCase.Initialize();
+                Debug.Log("[BuildingInitializer] RemoveBuildingUseCase initialized");
+            }
+
+            if (_moveBuildingUseCase is MoveBuildingUseCase moveUseCase)
+            {
+                moveUseCase.Initialize();
+                Debug.Log("[BuildingInitializer] MoveBuildingUseCase initialized");
             }
 
             if (_buildingPresenter != null)

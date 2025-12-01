@@ -29,6 +29,10 @@ namespace Installers.Gameplay
             builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.PlaceBuildingRequestDTO>(options);
             builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingPlacedDTO>(options);
             builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.InsufficientGoldDTO>(options);
+            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.RemoveBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingRemovedDTO>(options);
+            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.MoveBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingMovedDTO>(options);
 
             var economy = new Economy(500);
             builder.RegisterInstance(economy);
@@ -36,6 +40,8 @@ namespace Installers.Gameplay
             builder.Register<IEconomyService, EconomyService>(Lifetime.Singleton);
 
             builder.Register<IPlaceBuildingUseCase, PlaceBuildingUseCase>(Lifetime.Singleton);
+            builder.Register<IRemoveBuildingUseCase, RemoveBuildingUseCase>(Lifetime.Singleton);
+            builder.Register<IMoveBuildingUseCase, MoveBuildingUseCase>(Lifetime.Singleton);
 
             var prefabFactory = new BuildingPrefabFactory(_housePrefab);
             builder.RegisterInstance<IBuildingPrefabFactory>(prefabFactory);
