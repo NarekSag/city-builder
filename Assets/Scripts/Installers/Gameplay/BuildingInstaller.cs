@@ -1,6 +1,7 @@
 using Application.Services;
 using ContractsInterfaces.Infrastructure;
 using ContractsInterfaces.UseCasesGameplay;
+using Domain.Gameplay.MessagesDTO;
 using Domain.Gameplay.Models;
 using Infrastructure.Buildings;
 using Infrastructure.Prefabs;
@@ -26,13 +27,15 @@ namespace Installers.Gameplay
         {
             var options = builder.RegisterMessagePipe();
 
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.PlaceBuildingRequestDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingPlacedDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.InsufficientGoldDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.RemoveBuildingRequestDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingRemovedDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.MoveBuildingRequestDTO>(options);
-            builder.RegisterMessageBroker<Domain.Gameplay.MessagesDTO.BuildingMovedDTO>(options);
+            builder.RegisterMessageBroker<PlaceBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<BuildingPlacedDTO>(options);
+            builder.RegisterMessageBroker<InsufficientGoldDTO>(options);
+            builder.RegisterMessageBroker<RemoveBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<BuildingRemovedDTO>(options);
+            builder.RegisterMessageBroker<MoveBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<BuildingMovedDTO>(options);
+            builder.RegisterMessageBroker<UpgradeBuildingRequestDTO>(options);
+            builder.RegisterMessageBroker<BuildingUpgradedDTO>(options);
 
             var economy = new Economy(500);
             builder.RegisterInstance(economy);
@@ -42,6 +45,7 @@ namespace Installers.Gameplay
             builder.Register<IPlaceBuildingUseCase, PlaceBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IRemoveBuildingUseCase, RemoveBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IMoveBuildingUseCase, MoveBuildingUseCase>(Lifetime.Singleton);
+            builder.Register<IUpgradeBuildingUseCase, UpgradeBuildingUseCase>(Lifetime.Singleton);
 
             var prefabFactory = new BuildingPrefabFactory(_buildingPrefab);
             builder.RegisterInstance<IBuildingPrefabFactory>(prefabFactory);

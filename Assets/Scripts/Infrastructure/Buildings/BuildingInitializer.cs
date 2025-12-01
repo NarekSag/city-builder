@@ -11,6 +11,7 @@ namespace Infrastructure.Buildings
         [Inject] private IPlaceBuildingUseCase _placeBuildingUseCase;
         [Inject] private IRemoveBuildingUseCase _removeBuildingUseCase;
         [Inject] private IMoveBuildingUseCase _moveBuildingUseCase;
+        [Inject] private IUpgradeBuildingUseCase _upgradeBuildingUseCase;
         [Inject] private BuildingPresenter _buildingPresenter;
 
         public void Initialize()
@@ -31,6 +32,12 @@ namespace Infrastructure.Buildings
             {
                 moveUseCase.Initialize();
                 Debug.Log("[BuildingInitializer] MoveBuildingUseCase initialized");
+            }
+
+            if (_upgradeBuildingUseCase is UpgradeBuildingUseCase upgradeUseCase)
+            {
+                upgradeUseCase.Initialize();
+                Debug.Log("[BuildingInitializer] UpgradeBuildingUseCase initialized");
             }
 
             if (_buildingPresenter != null)
