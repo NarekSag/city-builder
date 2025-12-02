@@ -27,9 +27,12 @@ namespace Installers.Gameplay
 
         public void Install(IContainerBuilder builder)
         {
-            var options = builder.RegisterMessagePipe();
+            builder.RegisterBuildCallback(resolver =>
+            {
+                var options = resolver.Resolve<MessagePipeOptions>();
+                RegisterMessageBrokers(builder, options);
+            });
 
-            RegisterMessageBrokers(builder, options);
             RegisterUseCases(builder);
             RegisterServices(builder);
             RegisterInfrastructure(builder);

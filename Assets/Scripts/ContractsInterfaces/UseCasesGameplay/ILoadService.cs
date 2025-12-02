@@ -6,6 +6,7 @@ namespace ContractsInterfaces.UseCasesGameplay
     {
         GameStateDTO? Load(string filePath);
         bool SaveFileExists(string filePath);
+        string GetDefaultSavePath();
     }
 }
 

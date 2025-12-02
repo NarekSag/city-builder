@@ -7,6 +7,7 @@ namespace ContractsInterfaces.UseCasesGameplay
         bool AddGold(int amount);
         bool SpendGold(int amount, out bool success);
         bool HasEnoughGold(int amount);
+        bool SetGold(int amount);
     }
 }
 

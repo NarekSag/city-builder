@@ -5,6 +5,7 @@ namespace ContractsInterfaces.UseCasesGameplay
     public interface ISaveService
     {
         bool Save(GameStateDTO gameState, string filePath);
+        string GetDefaultSavePath();
     }
 }
 

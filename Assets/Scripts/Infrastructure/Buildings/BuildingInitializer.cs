@@ -15,6 +15,8 @@ namespace Infrastructure.Buildings
         [Inject] private BuildingPresenter _buildingPresenter;
         [Inject] private BuildingPropertiesPresenter _buildingPropertiesPresenter;
         [Inject] private BuildingCatalogPresenter _buildingCatalogPresenter;
+        [Inject] private ISaveGameUseCase _saveGameUseCase;
+        [Inject] private ILoadGameUseCase _loadGameUseCase;
 
         public void Initialize()
         {
@@ -70,6 +72,18 @@ namespace Infrastructure.Buildings
             else
             {
                 Debug.LogWarning("[BuildingInitializer] BuildingCatalogPresenter is null!");
+            }
+
+            if (_saveGameUseCase is SaveGameUseCase saveUseCase)
+            {
+                saveUseCase.Initialize();
+                Debug.Log("[BuildingInitializer] SaveGameUseCase initialized");
+            }
+
+            if (_loadGameUseCase is LoadGameUseCase loadUseCase)
+            {
+                loadUseCase.Initialize();
+                Debug.Log("[BuildingInitializer] LoadGameUseCase initialized");
             }
         }
     }

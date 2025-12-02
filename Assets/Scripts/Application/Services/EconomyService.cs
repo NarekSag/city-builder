@@ -107,6 +107,19 @@ namespace Application.Services
             return _economy.HasEnoughGold(amount);
         }
 
+        public bool SetGold(int amount)
+        {
+            var oldGold = _economy.Gold;
+            var result = _economy.SetGold(amount);
+            
+            if (result)
+            {
+                PublishGoldChanged(_economy.Gold, _economy.Gold - oldGold);
+            }
+            
+            return result;
+        }
+
         private void PublishGoldChanged(int newAmount, int delta)
         {
             if (_goldChangedPublisher != null)

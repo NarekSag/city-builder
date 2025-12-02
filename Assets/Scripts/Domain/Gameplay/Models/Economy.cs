@@ -52,6 +52,17 @@ namespace Domain.Gameplay.Models
         {
             return amount > 0 && _gold >= amount;
         }
+
+        public bool SetGold(int amount)
+        {
+            if (amount < 0)
+            {
+                return false;
+            }
+
+            _gold = amount;
+            return true;
+        }
     }
 }
 

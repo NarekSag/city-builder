@@ -2,6 +2,7 @@ using Infrastructure;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
+using MessagePipe;
 
 namespace Installers.Gameplay
 {
@@ -17,6 +18,9 @@ namespace Installers.Gameplay
 
         protected override void Configure(IContainerBuilder builder)
         {
+            builder.RegisterMessagePipe();
+            builder.RegisterBuildCallback(c => GlobalMessagePipe.SetProvider(c.AsServiceProvider()));
+            
             // Install in order: BuildingInstaller registers MessagePipe first
             _cameraInstaller.Install(builder);
             _inputInstaller.Install(builder);
@@ -24,6 +28,7 @@ namespace Installers.Gameplay
             _buildingInstaller.Install(builder); // This registers MessagePipe
             _economyInstaller.Install(builder);
             _hudInstaller.Install(builder); // This uses already registered MessagePipe
+            new SaveLoadInstaller().Install(builder); // Save/Load services and Use Cases
             
             builder.RegisterEntryPoint<GameFlow>();
         }
