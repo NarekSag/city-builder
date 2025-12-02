@@ -18,14 +18,21 @@ namespace Presentation.Gameplay.Presenters
         [Inject] private IBuildingConfigService _buildingConfigService;
         [Inject] private IPublisher<UpgradeBuildingRequestDTO> _upgradeBuildingPublisher;
         [Inject] private IPublisher<RemoveBuildingRequestDTO> _removeBuildingPublisher;
+        [Inject] private IPublisher<MoveModeStartedDTO> _moveModeStartedPublisher;
+        [Inject] private IPublisher<MoveModeCancelledDTO> _moveModeCancelledPublisher;
         [Inject] private ISubscriber<BuildingSelectedDTO> _buildingSelectedSubscriber;
         [Inject] private ISubscriber<BuildingUpgradedDTO> _buildingUpgradedSubscriber;
         [Inject] private ISubscriber<BuildingRemovedDTO> _buildingRemovedSubscriber;
+        [Inject] private ISubscriber<BuildingMovedDTO> _buildingMovedSubscriber;
+        [Inject] private ISubscriber<MoveModeCancelledDTO> _moveModeCancelledSubscriber;
 
         private IDisposable _selectedSubscription;
         private IDisposable _upgradedSubscription;
         private IDisposable _removedSubscription;
+        private IDisposable _movedSubscription;
+        private IDisposable _moveModeCancelledSubscription;
         private int? _selectedBuildingId;
+        private bool _isMoveMode;
 
         public void Initialize()
         {
@@ -36,6 +43,8 @@ namespace Presentation.Gameplay.Presenters
             _selectedSubscription = _buildingSelectedSubscriber.Subscribe(OnBuildingSelected);
             _upgradedSubscription = _buildingUpgradedSubscriber.Subscribe(OnBuildingUpgraded);
             _removedSubscription = _buildingRemovedSubscriber.Subscribe(OnBuildingRemoved);
+            _movedSubscription = _buildingMovedSubscriber.Subscribe(OnBuildingMoved);
+            _moveModeCancelledSubscription = _moveModeCancelledSubscriber.Subscribe(OnMoveModeCancelled);
         }
 
         private void OnBuildingSelected(BuildingSelectedDTO dto)
@@ -58,7 +67,22 @@ namespace Presentation.Gameplay.Presenters
             {
                 _view.Hide();
                 _selectedBuildingId = null;
+                _isMoveMode = false;
             }
+        }
+
+        private void OnBuildingMoved(BuildingMovedDTO dto)
+        {
+            if (_selectedBuildingId.HasValue && _selectedBuildingId.Value == dto.BuildingId)
+            {
+                _isMoveMode = false;
+                UpdateView(dto.BuildingId);
+            }
+        }
+
+        private void OnMoveModeCancelled(MoveModeCancelledDTO dto)
+        {
+            _isMoveMode = false;
         }
 
         private void UpdateView(int buildingId)
@@ -98,8 +122,23 @@ namespace Presentation.Gameplay.Presenters
 
         private void HandleMoveClicked()
         {
-            // TODO: Implement move mode
-            Debug.Log("[BuildingPropertiesPresenter] Move mode not yet implemented");
+            if (!_selectedBuildingId.HasValue) return;
+
+            if (_isMoveMode)
+            {
+                // Cancel move mode
+                _isMoveMode = false;
+                _moveModeCancelledPublisher.Publish(new MoveModeCancelledDTO());
+            }
+            else
+            {
+                // Start move mode
+                _isMoveMode = true;
+                _moveModeStartedPublisher.Publish(new MoveModeStartedDTO
+                {
+                    BuildingId = _selectedBuildingId.Value
+                });
+            }
         }
 
         private void HandleDeleteClicked()
@@ -123,6 +162,8 @@ namespace Presentation.Gameplay.Presenters
             _selectedSubscription?.Dispose();
             _upgradedSubscription?.Dispose();
             _removedSubscription?.Dispose();
+            _movedSubscription?.Dispose();
+            _moveModeCancelledSubscription?.Dispose();
         }
     }
 }
