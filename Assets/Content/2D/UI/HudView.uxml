@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="HudContainer" style="flex-direction: row; justify-content: flex-start; align-items: flex-start; position: absolute; top: 10px; left: 10px;">
+        <ui:VisualElement name="GoldPanel" style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 5px;">
+            <ui:Label name="GoldLabel" text="Gold: 0" style="font-size: 32px; color: rgb(255, 215, 0); -unity-font-style: bold; margin: 0px;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

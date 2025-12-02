@@ -16,6 +16,6 @@ MonoBehaviour:
   _houseBaseIncomePerTick: 10
   _farmBaseIncomePerTick: 30
   _mineBaseIncomePerTick: 50
-  _houseBaseCost: 10
+  _houseBaseCost: 100
   _farmBaseCost: 150
   _mineBaseCost: 200
