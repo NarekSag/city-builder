@@ -20,6 +20,9 @@ namespace Installers.Gameplay
             // Register Use Cases
             builder.Register<ISaveGameUseCase, SaveGameUseCase>(Lifetime.Singleton);
             builder.Register<ILoadGameUseCase, LoadGameUseCase>(Lifetime.Singleton);
+
+            // Register AutoSaveService
+            builder.Register<AutoSaveService>(Lifetime.Singleton);
         }
     }
 }

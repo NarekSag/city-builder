@@ -1,3 +1,4 @@
+using Application.Services;
 using ContractsInterfaces.UseCasesGameplay;
 using Presentation.Gameplay.Presenters;
 using UseCases.Gameplay;
@@ -17,6 +18,7 @@ namespace Infrastructure.Buildings
         [Inject] private BuildingCatalogPresenter _buildingCatalogPresenter;
         [Inject] private ISaveGameUseCase _saveGameUseCase;
         [Inject] private ILoadGameUseCase _loadGameUseCase;
+        [Inject] private AutoSaveService _autoSaveService;
 
         public void Initialize()
         {
@@ -84,6 +86,12 @@ namespace Infrastructure.Buildings
             {
                 loadUseCase.Initialize();
                 Debug.Log("[BuildingInitializer] LoadGameUseCase initialized");
+            }
+
+            if (_autoSaveService != null)
+            {
+                _autoSaveService.Initialize();
+                Debug.Log("[BuildingInitializer] AutoSaveService initialized");
             }
         }
     }
