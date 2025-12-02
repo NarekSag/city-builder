@@ -19,6 +19,7 @@ namespace UseCases.Gameplay
         [Inject] private IBuildingConfigService _buildingConfig;
         [Inject] private IPublisher<GameLoadedDTO> _gameLoadedPublisher;
         [Inject] private IPublisher<BuildingPlacedDTO> _buildingPlacedPublisher;
+        [Inject] private IPublisher<BuildingRemovedDTO> _buildingRemovedPublisher;
         [Inject] private ISubscriber<LoadGameRequestDTO> _loadGameRequestSubscriber;
 
         private IDisposable _subscription;
@@ -81,6 +82,9 @@ namespace UseCases.Gameplay
 
         private void RestoreGameState(GameStateDTO gameState)
         {
+            // Remove all existing buildings (visual cleanup) BEFORE clearing grid
+            ClearAllBuildings();
+
             // Clear existing grid
             _grid.Clear();
 
@@ -92,6 +96,24 @@ namespace UseCases.Gameplay
             if (buildingsList != null && buildingsList.Count > 0)
             {
                 RestoreBuildings(buildingsList);
+            }
+        }
+
+        private void ClearAllBuildings()
+        {
+            // Get all existing buildings BEFORE clearing grid and publish BuildingRemovedDTO for each
+            // This ensures visual representations are removed
+            var allBuildings = _grid.GetAllBuildings();
+            foreach (var kvp in allBuildings)
+            {
+                var building = kvp.Value;
+                var removedDto = new BuildingRemovedDTO
+                {
+                    BuildingId = building.Id,
+                    BuildingType = building.Type,
+                    Position = building.Position
+                };
+                _buildingRemovedPublisher.Publish(removedDto);
             }
         }
 
