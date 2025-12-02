@@ -1,0 +1,17 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="PropertiesPanel" style="display: none; position: absolute; bottom: 20px; left: 20px; width: 300px; background-color: rgba(0, 0, 0, 0.8); padding: 20px; border-radius: 10px;">
+        <ui:Label text="Building Properties" style="font-size: 20px; color: rgb(255, 255, 255); -unity-font-style: bold; margin-bottom: 15px;"/>
+        
+        <ui:Label name="BuildingTypeLabel" text="Type: " style="font-size: 16px; color: rgb(255, 255, 255); margin-bottom: 5px;"/>
+        <ui:Label name="BuildingLevelLabel" text="Level: " style="font-size: 16px; color: rgb(255, 255, 255); margin-bottom: 5px;"/>
+        <ui:Label name="BuildingIncomeLabel" text="Income: " style="font-size: 16px; color: rgb(255, 255, 255); margin-bottom: 5px;"/>
+        <ui:Label name="UpgradeCostLabel" text="Upgrade Cost: " style="font-size: 16px; color: rgb(255, 215, 0); margin-bottom: 15px;"/>
+        
+        <ui:VisualElement style="flex-direction: row; justify-content: space-between; margin-top: 10px;">
+            <ui:Button name="UpgradeButton" text="Upgrade" style="flex-grow: 1; margin-right: 5px; height: 35px;"/>
+            <ui:Button name="MoveButton" text="Move" style="flex-grow: 1; margin-right: 5px; height: 35px;"/>
+            <ui:Button name="DeleteButton" text="Delete" style="flex-grow: 1; height: 35px; background-color: rgba(200, 0, 0, 0.8);"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

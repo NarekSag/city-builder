@@ -16,6 +16,7 @@ namespace Presentation.Gameplay.Presenters
         [Inject] private Grid _grid;
         [Inject] private GridView _view;
         [Inject] private IPublisher<PlaceBuildingRequestDTO> _placeBuildingPublisher;
+        [Inject] private IPublisher<BuildingSelectedDTO> _buildingSelectedPublisher;
         [Inject] private IInputAdapter _inputAdapter;
 
         private BuildingType _selectedBuildingType = BuildingType.House;
@@ -93,6 +94,19 @@ namespace Presentation.Gameplay.Presenters
                 return;
             }
 
+            // Check if there's a building at this position
+            if (_grid.GetBuildingAt(position, out var building))
+            {
+                // Clicked on existing building - select it
+                var selectedDto = new BuildingSelectedDTO
+                {
+                    BuildingId = building.Id
+                };
+                _buildingSelectedPublisher.Publish(selectedDto);
+                return;
+            }
+
+            // Empty cell - place new building
             var gridPos = new GridPosition(position);
             var request = new PlaceBuildingRequestDTO
             {

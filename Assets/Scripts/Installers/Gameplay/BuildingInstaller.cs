@@ -22,6 +22,7 @@ namespace Installers.Gameplay
 
         [Header("Building Components")]
         [SerializeField] private BuildingView _buildingView;
+        [SerializeField] private BuildingPropertiesView _buildingPropertiesView;
 
         public void Install(IContainerBuilder builder)
         {
@@ -37,6 +38,7 @@ namespace Installers.Gameplay
             builder.RegisterMessageBroker<UpgradeBuildingRequestDTO>(options);
             builder.RegisterMessageBroker<BuildingUpgradedDTO>(options);
             builder.RegisterMessageBroker<GoldChangedDTO>(options);
+            builder.RegisterMessageBroker<BuildingSelectedDTO>(options);
 
             builder.Register<IPlaceBuildingUseCase, PlaceBuildingUseCase>(Lifetime.Singleton);
             builder.Register<IRemoveBuildingUseCase, RemoveBuildingUseCase>(Lifetime.Singleton);
@@ -63,6 +65,22 @@ namespace Installers.Gameplay
             }
 
             builder.Register<BuildingPresenter>(Lifetime.Singleton);
+
+            if (_buildingPropertiesView == null)
+            {
+                _buildingPropertiesView = FindFirstObjectByType<BuildingPropertiesView>();
+            }
+
+            if (_buildingPropertiesView != null)
+            {
+                builder.RegisterComponent(_buildingPropertiesView);
+            }
+            else
+            {
+                Debug.LogWarning("[BuildingInstaller] BuildingPropertiesView not found! Create BuildingPropertiesView GameObject in scene with UIDocument component.");
+            }
+
+            builder.Register<BuildingPropertiesPresenter>(Lifetime.Singleton);
 
             builder.Register<BuildingInitializer>(Lifetime.Singleton);
         }
