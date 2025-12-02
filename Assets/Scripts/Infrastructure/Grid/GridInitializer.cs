@@ -1,3 +1,4 @@
+#nullable enable
 using ContractsInterfaces.Infrastructure;
 using Presentation.Gameplay.Presenters;
 using Presentation.Gameplay.Views;

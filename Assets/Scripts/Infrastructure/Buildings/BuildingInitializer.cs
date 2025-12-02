@@ -14,6 +14,7 @@ namespace Infrastructure.Buildings
         [Inject] private IUpgradeBuildingUseCase _upgradeBuildingUseCase;
         [Inject] private BuildingPresenter _buildingPresenter;
         [Inject] private BuildingPropertiesPresenter _buildingPropertiesPresenter;
+        [Inject] private BuildingCatalogPresenter _buildingCatalogPresenter;
 
         public void Initialize()
         {
@@ -59,6 +60,16 @@ namespace Infrastructure.Buildings
             else
             {
                 Debug.LogWarning("[BuildingInitializer] BuildingPropertiesPresenter is null!");
+            }
+
+            if (_buildingCatalogPresenter != null)
+            {
+                _buildingCatalogPresenter.Initialize();
+                Debug.Log("[BuildingInitializer] BuildingCatalogPresenter initialized");
+            }
+            else
+            {
+                Debug.LogWarning("[BuildingInitializer] BuildingCatalogPresenter is null!");
             }
         }
     }
