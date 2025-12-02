@@ -3,6 +3,10 @@
         <ui:VisualElement name="GoldPanel" style="background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 5px;">
             <ui:Label name="GoldLabel" text="Gold: 0" style="font-size: 32px; color: rgb(255, 215, 0); -unity-font-style: bold; margin: 0px;"/>
         </ui:VisualElement>
+        <ui:VisualElement name="SaveLoadPanel" style="background-color: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px; margin-left: 10px;">
+            <ui:Button name="SaveButton" text="Save Game" style="font-size: 16px; padding: 10px 20px; margin-bottom: 5px; min-width: 120px;"/>
+            <ui:Button name="LoadButton" text="Load Game" style="font-size: 16px; padding: 10px 20px; min-width: 120px;"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
 

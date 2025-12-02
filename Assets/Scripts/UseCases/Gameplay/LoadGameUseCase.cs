@@ -63,9 +63,10 @@ namespace UseCases.Gameplay
                 RestoreGameState(gameState);
 
                 // Publish GameLoadedDTO
+                var buildingsList = gameState.GetBuildingsList();
                 var loadedDto = new GameLoadedDTO
                 {
-                    BuildingsCount = gameState.Buildings?.Count ?? 0,
+                    BuildingsCount = buildingsList.Count,
                     Gold = gameState.Gold
                 };
                 _gameLoadedPublisher.Publish(loadedDto);
@@ -87,9 +88,10 @@ namespace UseCases.Gameplay
             RestoreGold(gameState.Gold);
 
             // Restore buildings
-            if (gameState.Buildings != null && gameState.Buildings.Count > 0)
+            var buildingsList = gameState.GetBuildingsList();
+            if (buildingsList != null && buildingsList.Count > 0)
             {
-                RestoreBuildings(gameState.Buildings);
+                RestoreBuildings(buildingsList);
             }
         }
 
@@ -107,8 +109,12 @@ namespace UseCases.Gameplay
             {
                 try
                 {
+                    Debug.Log($"[LoadGameUseCase] Restoring building {buildingData.Id} at position ({buildingData.PositionX}, {buildingData.PositionY})");
+                    
                     var building = ConvertDTOToBuilding(buildingData);
                     var position = new GridPosition(buildingData.PositionX, buildingData.PositionY);
+
+                    Debug.Log($"[LoadGameUseCase] Created position ({position.X}, {position.Y}) for building {buildingData.Id}");
 
                     if (!_grid.IsValidPosition(position))
                     {
@@ -127,6 +133,8 @@ namespace UseCases.Gameplay
                         Debug.LogWarning($"[LoadGameUseCase] Failed to place building {buildingData.Id} at ({buildingData.PositionX}, {buildingData.PositionY})");
                         continue;
                     }
+                    
+                    Debug.Log($"[LoadGameUseCase] Successfully placed building {buildingData.Id} at ({position.X}, {position.Y})");
 
                     // Publish BuildingPlacedDTO for each restored building
                     var placedDto = new BuildingPlacedDTO

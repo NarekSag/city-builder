@@ -6,17 +6,26 @@ namespace Presentation.Gameplay.Views
     [RequireComponent(typeof(UIDocument))]
     public class HudView : MonoBehaviour
     {
-        private const string GOLD_LABEL_NAME = "GoldLabel";
+        private const string GoldLabelName = "GoldLabel";
+        private const string SaveButtonName = "SaveButton";
+        private const string LoadButtonName = "LoadButton";
 
         private UIDocument _uiDocument;
         private VisualElement _root;
         private Label _goldLabel;
+        private Button _saveButton;
+        private Button _loadButton;
+
+        public Button SaveButton => _saveButton;
+        public Button LoadButton => _loadButton;
 
         private void Awake()
         {
             _uiDocument = GetComponent<UIDocument>();
             _root = _uiDocument.rootVisualElement;
-            _goldLabel = _root.Q<Label>(GOLD_LABEL_NAME);
+            _goldLabel = _root.Q<Label>(GoldLabelName);
+            _saveButton = _root.Q<Button>(SaveButtonName);
+            _loadButton = _root.Q<Button>(LoadButtonName);
         }
 
         public void UpdateGold(int amount)

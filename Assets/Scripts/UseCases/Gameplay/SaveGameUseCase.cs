@@ -49,13 +49,14 @@ namespace UseCases.Gameplay
 
                 if (success)
                 {
+                    var buildingsCount = gameState.GetBuildingsList().Count;
                     var savedDto = new GameSavedDTO
                     {
                         SaveTimestamp = gameState.SaveTimestamp,
-                        BuildingsCount = gameState.Buildings?.Count ?? 0
+                        BuildingsCount = buildingsCount
                     };
                     _gameSavedPublisher.Publish(savedDto);
-                    Debug.Log($"[SaveGameUseCase] Game saved successfully. Buildings: {savedDto.BuildingsCount}, Gold: {gameState.Gold}");
+                    Debug.Log($"[SaveGameUseCase] Game saved successfully. Buildings: {buildingsCount}, Gold: {gameState.Gold}");
                 }
                 else
                 {
@@ -73,33 +74,37 @@ namespace UseCases.Gameplay
             var gameState = new GameStateDTO
             {
                 Gold = _economyService.GetGold(),
-                Buildings = new List<BuildingDataDTO>(),
                 SaveTimestamp = DateTime.UtcNow.ToString("O")
             };
 
             // Collect all buildings from Grid
+            var buildingsList = new List<BuildingDataDTO>();
             var allBuildings = _grid.GetAllBuildings();
             foreach (var kvp in allBuildings)
             {
                 var building = kvp.Value;
-                var buildingData = ConvertBuildingToDTO(building);
-                gameState.Buildings.Add(buildingData);
+                var gridPosition = kvp.Key; // Use the key (Vector2Int) from dictionary as the source of truth
+                var buildingData = ConvertBuildingToDTO(building, gridPosition);
+                buildingsList.Add(buildingData);
             }
 
+            gameState.SetBuildingsList(buildingsList);
             return gameState;
         }
 
-        private BuildingDataDTO ConvertBuildingToDTO(Building building)
+        private BuildingDataDTO ConvertBuildingToDTO(Building building, Vector2Int gridPosition)
         {
-            return new BuildingDataDTO
-            {
-                Id = building.Id,
-                Type = building.Type,
-                Level = building.Level,
-                PositionX = building.Position.X,
-                PositionY = building.Position.Y,
-                IncomeAmountPerTick = building.CurrentIncome.AmountPerTick
-            };
+            var dto = new BuildingDataDTO();
+            dto.Id = building.Id;
+            dto.Type = building.Type;
+            dto.Level = building.Level;
+            dto.PositionX = gridPosition.x; // Use grid position from dictionary key
+            dto.PositionY = gridPosition.y; // Use grid position from dictionary key
+            dto.IncomeAmountPerTick = building.CurrentIncome.AmountPerTick;
+            
+            Debug.Log($"[SaveGameUseCase] Converting building {building.Id} at position ({dto.PositionX}, {dto.PositionY})");
+            
+            return dto;
         }
 
         public void Dispose()

@@ -37,16 +37,17 @@ namespace Application.Services
                     gameState.SaveTimestamp = DateTime.UtcNow.ToString("O");
                 }
 
-                if (gameState.Buildings == null)
+                if (gameState.Buildings == null || gameState.Buildings.Items == null)
                 {
-                    gameState.Buildings = new List<BuildingDataDTO>();
+                    gameState.SetBuildingsList(new List<BuildingDataDTO>());
                 }
 
                 var json = JsonUtility.ToJson(gameState, prettyPrint: true);
 
                 File.WriteAllText(filePath, json);
 
-                Debug.Log($"[SaveService] Game saved successfully to: {filePath} (Buildings: {gameState.Buildings.Count}, Gold: {gameState.Gold})");
+                var buildingsCount = gameState.Buildings?.Items?.Length ?? 0;
+                Debug.Log($"[SaveService] Game saved successfully to: {filePath} (Buildings: {buildingsCount}, Gold: {gameState.Gold})");
                 return true;
             }
             catch (Exception ex)

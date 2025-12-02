@@ -47,7 +47,8 @@ namespace Application.Services
                     return null;
                 }
 
-                Debug.Log($"[LoadService] Game loaded successfully from: {filePath} (Buildings: {gameState.Buildings?.Count ?? 0}, Gold: {gameState.Gold})");
+                var buildingsCount = gameState.Buildings?.Items?.Length ?? 0;
+                Debug.Log($"[LoadService] Game loaded successfully from: {filePath} (Buildings: {buildingsCount}, Gold: {gameState.Gold})");
                 return gameState;
             }
             catch (Exception ex)
@@ -85,13 +86,13 @@ namespace Application.Services
                 return false;
             }
 
-            if (gameState.Buildings == null)
+            if (gameState.Buildings == null || gameState.Buildings.Items == null)
             {
-                gameState.Buildings = new System.Collections.Generic.List<BuildingDataDTO>();
+                gameState.SetBuildingsList(new System.Collections.Generic.List<BuildingDataDTO>());
                 return true;
             }
 
-            foreach (var building in gameState.Buildings)
+            foreach (var building in gameState.Buildings.Items)
             {
                 if (!ValidateBuildingData(building))
                 {
