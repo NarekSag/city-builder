@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+using System;
 using Domain.Gameplay.Models;
 
 namespace Domain.Gameplay.MessagesDTO
 {
+    [Serializable]
     public class BuildingDataDTO
     {
         public int Id { get; set; }
